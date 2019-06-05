@@ -26,9 +26,13 @@ import 'onbordingscreen1/pages/splash_screen.dart';
 import 'silvarAppbar.dart';
 import 'signeture.dart';
 import 'ageCalculator.dart';
-import 'cameraAccess.dart';
+//import 'cameraAccess.dart';
 import 'wifi.dart';
 import 'loginwithvalidation/main.dart';
+import 'page1/page1.dart';
+import 'page2/page2.dart';
+import 'page3/page3.dart';
+import 'cameraAccess.dart';
 
 void main(){
   runApp(new MyApp());
@@ -394,109 +398,94 @@ class HomePage extends StatelessWidget {
 //        ),
 //        body: BottomBarHome(),
 
-      body: BottomBarHome(),
+
+      body: BottomNavBar(),
+
+
 //        constraints: BottomNavyBar(),
 //      ),
     );
   }
 }
 
-
-class BottomBarHome extends StatefulWidget {
-
-  BottomBarHome({Key key, this.title}) : super(key: key);
-  final String title;
-
-
+class BottomNavBar extends StatefulWidget {
   @override
-  BottomBarHomeState createState() => new BottomBarHomeState();
+  _BottomNavBarState createState() => _BottomNavBarState();
 }
 
+class _BottomNavBarState extends State<BottomNavBar> {
 
-// SingleTickerProviderStateMixin is used for animation
-class BottomBarHomeState extends State<BottomBarHome> with SingleTickerProviderStateMixin {
-  // Create a tab controller
-
-
-  int _currentIndex = 0;
-
-  List<Widget> _tabList = [
-    Container(
-      color: Colors.teal,
-    ),
-    Container(
-      color: Colors.red,
-    ),
-    Container(
-      color: Colors.purple,
-    )
-
-  ];
-
-  TabController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Initialize the Tab Controller
-    controller = new TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    // Dispose of the Tab Controller
-    controller.dispose();
-    super.dispose();
-  }
+  final int _pageCount = 3;
+  int _pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
+      body: _body(),
+      bottomNavigationBar: _bottomNavigationBar(),
+    );
+  }
 
-
-      // Set the TabBar view as the body of the Scaffold
-//      bottomNavigationBar: new TabBarView(
-//        // Add tabs as widgets
-////        children: <Widget>[new FirstTab(), new SecondTab(), new ThirdTab()],
-//        // set the controller
-//        controller: controller,
-//      ),
-//      body: new TabBarView(children: null),
-//      body: new TabBarView(
-//        // Add tabs as widgets
-//        children: <Widget>[new CameraExampleHome(), new WifiHome(),  new WifiHome()],
-//        // set the controller
-//        controller: controller,
-//      ),
-
-      // Set the bottom navigation bar
-      bottomNavigationBar: new Material(
-        // set the color of the bottom navigation bar
-//        onTap: onTabTapped,
-//        currentIndex: _currentIndex,
-        color: Colors.amber,
-        // set the tab bar as the child of bottom navigation bar
-        child: new TabBar(
-          tabs: <Tab>[
-            new Tab(
-              // set icon to the tab
-              icon: new Icon(Icons.home, size: 40.0),
-              text: "Home",
-            ),
-            new Tab(
-              icon: new Icon(Icons.photo_camera, size: 40.0),
-              text: "Camera",
-            ),
-            new Tab(
-              icon: new Icon(Icons.network_wifi, size: 40.0),
-              text: "Wifi",
-            ),
-          ],
-          // setup the controller
-          controller: controller,
+  Widget _body() {
+    return Stack(
+        children: List<Widget>.generate(_pageCount, (int index) {
+      return IgnorePointer(
+        ignoring: index != _pageIndex,
+        child: Opacity(
+          opacity: _pageIndex == index ? 1.0 : 0.0 ,
+          child: Navigator(
+            onGenerateRoute: (RouteSettings settings) {
+              return new MaterialPageRoute(
+                builder: (_) => _page(index),
+                settings: settings,
+              );
+            },
+          ),
         ),
-      ),
+      );
+    }),
+    );
+  }
+
+  Widget _page(int index) {
+    switch (index) {
+      case 0:
+        return Page3();
+      case 1:
+        return bottomshit();
+      case 2:
+        return Page3();
+    }
+
+    throw "Invalid index $index";
+  }
+
+  BottomNavigationBar _bottomNavigationBar() {
+    final theme = Theme.of(context);
+    return new BottomNavigationBar(
+      fixedColor: theme.accentColor,
+      currentIndex: _pageIndex,
+      items: [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home, size: 40.0,),
+          title: Text("Page 1 ", style: TextStyle(fontSize: 25.0, color: Colors.deepOrange),),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.pageview, size: 40.0,),
+          title: Text("Page 2", style: TextStyle(fontSize: 25.0, color: Colors.greenAccent),),
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.photo_album, size: 40.0,),
+          title: Text("Page 3", style: TextStyle(fontSize: 25.0, color: Colors.deepPurple),),
+        ),
+      ],
+      onTap: (int index) {
+        setState(() {
+          _pageIndex = index;
+        });
+      },
     );
   }
 }
+
+
